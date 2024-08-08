@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\qtagedit.cpp">
+      <Filter>QTagEdit</Filter>
+    </ClCompile>
+    <ClCompile Include="example\main.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+    <ClCompile Include="example\tags_line_edit.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="QTagEdit">
+      <UniqueIdentifier>{cb7f090d-d521-4579-a99d-e496698dc27f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="example">
+      <UniqueIdentifier>{85a351fb-e629-49da-a012-36140d52e098}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\QTagEdit\qtagedit.hpp">
+      <Filter>QTagEdit</Filter>
+    </QtMoc>
+    <QtMoc Include="example\tags_line_edit.hpp">
+      <Filter>example</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="example\tags_impl.hpp">
+      <Filter>example</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
