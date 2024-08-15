@@ -258,15 +258,17 @@ void QTagEdit::keyPressEvent(QKeyEvent *event)
 {
   QLineEdit::keyPressEvent(event);
 
-  if (this->text().isEmpty() || this->text().back() == ' ') {
-    impl->completer->setCompletionPrefix("");
-    impl->completer->complete();
-  } else {
-    auto tags = getTags();
-    if (!tags.isEmpty()) {
-      auto last_tag = tags.back();
-      impl->completer->setCompletionPrefix(last_tag);
+  if (impl->completer != nullptr) {
+    if (this->text().isEmpty() || this->text().back() == ' ') {
+      impl->completer->setCompletionPrefix("");
       impl->completer->complete();
+    } else {
+      auto tags = getTags();
+      if (!tags.isEmpty()) {
+        auto last_tag = tags.back();
+        impl->completer->setCompletionPrefix(last_tag);
+        impl->completer->complete();
+      }
     }
   }
 }
