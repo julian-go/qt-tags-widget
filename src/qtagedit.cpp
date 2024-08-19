@@ -289,6 +289,9 @@ void QTagEdit::renderTags(QStylePainter &painter, QRect rect)
 
     auto pen = Filter(tag) ? getPenForColor(impl->primary.property_color)
                            : getPenForColor(impl->secondary.property_color);
+    if (!this->isEnabled()) {
+      pen.setColor(QColor("gray"));
+    }
     painter.setPen(pen);
     painter.drawText(rect, Qt::AlignVCenter, tag);
 
@@ -325,7 +328,7 @@ void QTagEdit::renderTagBackgrounds(QStylePainter &painter, QRect rect,
         property_only = tag.sliced(first_sep);
       }
     }
-    if (!line_only) {
+    if (!line_only && this->isEnabled()) {
       auto has_property = !property_only.isEmpty();
       auto margin =
           has_property ? Impl::kTagMarginsWithProperty : Impl::kTagMargins;
@@ -342,7 +345,11 @@ void QTagEdit::renderTagBackgrounds(QStylePainter &painter, QRect rect,
     }
     {
       auto line_rect = text_rect(tag, rect.left(), Impl::kTagMargins);
-      painter.setPen(QPen(style.line_color, Impl::kLineWidth));
+      if (this->isEnabled()) {
+        painter.setPen(QPen(style.line_color, Impl::kLineWidth));
+      } else {
+        painter.setPen(QPen(QColor("lightgray"), Impl::kLineWidth));
+      }
       painter.drawLine(line_rect.bottomLeft(), line_rect.bottomRight());
     }
     rect.moveLeft(rect.left() + fontMetrics().horizontalAdvance(tag + " "));
