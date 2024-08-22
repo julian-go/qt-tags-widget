@@ -380,6 +380,9 @@ void QTagEdit::makeTagsUnique()
   }
   if (impl->separator) {
     auto properties = getProperties();
+    std::sort(
+        properties.begin(), properties.end(),
+        [](const Property &a, const Property &b) { return a.name < b.name; });
     auto last = std::unique(
         properties.begin(), properties.end(),
         [](const Property &a, const Property &b) { return a.name == b.name; });
@@ -387,6 +390,7 @@ void QTagEdit::makeTagsUnique()
     setProperties(properties);
   } else {
     auto tags = getTags();
+    std::sort(tags.begin(), tags.end());
     auto last =
         std::unique(tags.begin(), tags.end(),
                     [](const QString &a, const QString &b) { return a == b; });
