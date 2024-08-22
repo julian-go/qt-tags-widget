@@ -11,11 +11,11 @@ std::unique_ptr<QMainWindow> setupUi()
   auto main_window = std::make_unique<QMainWindow>();
   main_window->setCentralWidget(new QWidget());
   main_window->resize(800, 200);
-  auto layout = new QFormLayout(main_window->centralWidget());
+  auto* layout = new QFormLayout(main_window->centralWidget());
 
-  auto tag_edit = new QTagEdit();
-  auto property_edit = new QTagEdit();
-  auto line_edit = new QLineEdit();
+  auto* tag_edit = new QTagEdit();
+  auto* property_edit = new QTagEdit();
+  auto* line_edit = new QLineEdit();
 
   {
     QStringList valid_tags = {"wow", "such", "tags"};
@@ -26,7 +26,7 @@ std::unique_ptr<QMainWindow> setupUi()
   }
 
   {
-    QStringList valid_properties = {"width", "height", "box"};
+    const QStringList valid_properties = {"width", "height", "box"};
     property_edit->setTagsForCompletion(valid_properties);
     property_edit->setTagFilter([valid_properties](const QString& tag) {
       return valid_properties.contains(tag);
@@ -41,7 +41,7 @@ std::unique_ptr<QMainWindow> setupUi()
                      [property_edit, line_edit]() {
                        auto properties = property_edit->getProperties();
                        QString text{};
-                       for (auto prop : properties) {
+                       for (const auto& prop : properties) {
                          text.append(prop.name + ", ");
                        }
                        text.chop(2);

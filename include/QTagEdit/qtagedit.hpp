@@ -118,9 +118,6 @@ class QTagEdit : public QLineEdit {
   void paintEvent(QPaintEvent *event) override;
   void keyPressEvent(QKeyEvent *event) override;
 
- private slots:
-  void insertCompletion(const QString &completion);
-
  private:
   void renderTags(QStylePainter &painter, QRect rect);
   void renderTagBackgrounds(QStylePainter &painter, QRect rect, bool line_only);

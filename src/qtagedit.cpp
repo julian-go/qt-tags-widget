@@ -27,11 +27,14 @@
 #include <optional>
 
 struct QTagEdit::Impl {
+  ~Impl() = default;
+
   static constexpr int kLineEditLeftMargin{3};
 
   // Colors for tag brackgrounds
   // https://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
-  static constexpr double kRgbBrightnessWeights[] = {0.299, 0.587, 0.114};
+  static constexpr std::array<double, 3> kRgbBrightnessWeights = {0.299, 0.587,
+                                                                  0.114};
   static constexpr double kDarkColorTreshold = 150;
   static constexpr QColor kDarkColor{0, 0, 0};
   static constexpr QColor kBrightColor{245, 245, 245};
@@ -82,7 +85,7 @@ QTagEdit::QTagEdit(QWidget *parent)
 
   // Only allow a single whitespace between tags
   this->setValidator(
-      new QRegularExpressionValidator(QRegularExpression("\\S+(\\s\\S+)*")));
+      new QRegularExpressionValidator(QRegularExpression(R"(\S+(\s\S+)*)")));
 }
 
 QTagEdit::~QTagEdit() {}
@@ -131,10 +134,10 @@ void QTagEdit::removeLastTag()
 void QTagEdit::setProperties(const PropertyList &properties)
 {
   auto tags = QStringList{};
-  for (auto property : properties) {
+  for (const auto &property : properties) {
     tags.append(property.name);
     if (auto sep = impl->separator) {
-      for (auto value : property.values) {
+      for (const auto &value : property.values) {
         tags.last() += *sep + value;
       }
     }
@@ -144,9 +147,9 @@ void QTagEdit::setProperties(const PropertyList &properties)
 
 void QTagEdit::addProperty(const Property &property)
 {
-  auto tag = property.name;
-  if (auto sep = impl->separator) {
-    for (auto value : property.values) {
+  QString tag = property.name;
+  if (const auto &sep = impl->separator) {
+    for (const auto &value : property.values) {
       tag += *sep + value;
     }
   }
@@ -157,7 +160,7 @@ QTagEdit::PropertyList QTagEdit::getProperties() const
 {
   auto list = PropertyList{};
   auto tags = getTags();
-  for (auto tag : tags) {
+  for (const auto &tag : tags) {
     if (auto sep = impl->separator) {
       auto tokens = tag.split(*sep);
       if (tokens.size() > 1) {
@@ -189,7 +192,7 @@ void QTagEdit::setSecondaryColors(const QColor &line_color,
 
 void QTagEdit::setTagFilter(std::function<bool(const QString &)> filter)
 {
-  impl->tag_filter = filter;
+  impl->tag_filter = std::move(filter);
 }
 
 void QTagEdit::setPropertySeparator(QChar separator)
@@ -243,7 +246,6 @@ void QTagEdit::paintEvent(QPaintEvent *event)
     QStylePainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     renderTagBackgrounds(painter, content_rect, true);
-    return;
   } else {
     QStylePainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -265,7 +267,7 @@ void QTagEdit::keyPressEvent(QKeyEvent *event)
     } else {
       auto tags = getTags();
       if (!tags.isEmpty()) {
-        auto last_tag = tags.back();
+        const auto &last_tag = tags.back();
         impl->completer->setCompletionPrefix(last_tag);
         impl->completer->complete();
       }
@@ -273,18 +275,9 @@ void QTagEdit::keyPressEvent(QKeyEvent *event)
   }
 }
 
-void QTagEdit::insertCompletion(const QString &completion)
-{
-  if (impl->completer == nullptr) {
-    return;
-  }
-
-  QCursor tc = cursor();
-}
-
 void QTagEdit::renderTags(QStylePainter &painter, QRect rect)
 {
-  for (auto tag : getTags()) {
+  for (const auto &tag : getTags()) {
     this->ensurePolished();
 
     auto pen = Filter(tag) ? getPenForColor(impl->primary.property_color)
@@ -314,7 +307,7 @@ void QTagEdit::renderTagBackgrounds(QStylePainter &painter, QRect rect,
     return rect;
   };
 
-  for (auto tag : getTags()) {
+  for (const auto &tag : getTags()) {
     this->ensurePolished();
 
     QString tag_only = tag;
@@ -338,7 +331,8 @@ void QTagEdit::renderTagBackgrounds(QStylePainter &painter, QRect rect,
 
       if (has_property) {
         QPainterPath path;
-        int offset = rect.left() + fontMetrics().horizontalAdvance(tag_only);
+        const int offset =
+            rect.left() + fontMetrics().horizontalAdvance(tag_only);
         path.addRect(text_rect(property_only, offset, Impl::kPropertyMargins));
         painter.fillPath(path, style.property_color);
       }
@@ -366,19 +360,17 @@ QPen QTagEdit::getPenForColor(const QColor &color)
       scale_a(color.green()) * impl->kRgbBrightnessWeights[1] +
       scale_a(color.blue()) * impl->kRgbBrightnessWeights[2];
   if (weighted_color > impl->kDarkColorTreshold) {
-    return QPen(impl->kDarkColor);
-  } else {
-    return QPen(impl->kBrightColor);
+    return {impl->kDarkColor};
   }
+  return {impl->kBrightColor};
 }
 
 bool QTagEdit::Filter(const QString &tag)
 {
   if (impl->tag_filter) {
     return impl->tag_filter(tag);
-  } else {
-    return true;
   }
+  return true;
 }
 
 void QTagEdit::makeTagsUnique()

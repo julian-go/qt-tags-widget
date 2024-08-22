@@ -7,9 +7,6 @@
     <ClCompile Include="example\main.cpp">
       <Filter>example</Filter>
     </ClCompile>
-    <ClCompile Include="example\tags_line_edit.cpp">
-      <Filter>example</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="QTagEdit">
@@ -23,13 +20,5 @@
     <QtMoc Include="include\QTagEdit\qtagedit.hpp">
       <Filter>QTagEdit</Filter>
     </QtMoc>
-    <QtMoc Include="example\tags_line_edit.hpp">
-      <Filter>example</Filter>
-    </QtMoc>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="example\tags_impl.hpp">
-      <Filter>example</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
